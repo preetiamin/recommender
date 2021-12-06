@@ -44,9 +44,9 @@ def load_data():
     numratings = ratings.groupby('MovieID')['Rating'].count()
     numratings.name = 'NumRatings'
     movies = movies.merge(numratings,on='MovieID')
-    return movies
+    return movies, ratings
 
-movies = load_data()
+movies, ratings = load_data()
 
 def get_top_movies_by_rating(genre, n):
     return movies[(movies['NumRatings']>100) & (movies[genre]==1)].sort_values('AveRating', \
@@ -88,7 +88,7 @@ elif selected_type=='Collaborative Filtering':
     selected_method = st.sidebar.radio('Rating Method', ('User Based', 'Item Based', 'SVD'))
     n=10
 
-    user_item = ratings.pivot_table(values='Rating',index='UserID',columns='MovieID')
+    user_item = ratings.pivot_table('Rating','UserID','MovieID')
     user_item.fillna(0,inplace=True)
     reader = Reader(rating_scale=(1, 5))
 
