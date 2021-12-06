@@ -101,7 +101,7 @@ elif selected_type=='Collaborative Filtering':
 
     movies_to_rate = get_popular_movies(50)
     rows = 10
-    
+
     with st.form(key='columns_in_form'):
         cols = st.columns(5)
         #st.write(img_url+'/'+str(top_movies.iloc[1,0])+'.jpg')
@@ -112,13 +112,40 @@ elif selected_type=='Collaborative Filtering':
                 with col:
                     st.image(img_url+'/'+str(movies_to_rate.iloc[i,0])+'.jpg',width=100)
                     val = col.selectbox(f'', ['Not Rated','1','2','3','4','5'], key=i)
-                    user_item.loc[9999,movies_to_rate.iloc[i,0]]=np.nan if val=='Not Rated' else int(val)
+                    if val!='Not Rated':
+                        ratings = ratings.append({'UserID':9999,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
+                    #user_item.loc[9999,movies_to_rate.iloc[i,0]]=np.nan if val=='Not Rated' else int(val)
                     i+=1
         submitted = st.form_submit_button('Submit')
         if submitted:
+            '''
             st.write(user_item.loc[9999,:].sort_values())
             st.write(movies_to_rate)
+            all_recs = {}
+            uid = 9999
+            for iid in user_item.columns:
+                if user_item.loc[uid,iid]==0:
+                    est = algo.predict(uid,iid).est
+                    all_recs[iid]=est
             #for i in range(rows*cols+1):
+            '''
+            reader = Reader(rating_scale=(1, 5))
+            data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
+            trainset = data.build_full_trainset()
+            algo.fit(trainset)
+            
+            all_recs = {}
+            uid = 9999
+            for iid in ratings['MovieID'].unique():
+                if iid not in movies_to_rate:
+                    est = algo.predict(uid,iid).est
+                    all_recs[iid]=est
+                    
+            top_n = sorted(all_recs.items(), key=lambda x: x[1], reverse=True)[:n]
+            top_n_ids = [x[0] for x in top_n]
+            st.write(top_n_ids)
+        
+
 
     '''
     if selected_method =='By User Rating':
