@@ -68,14 +68,14 @@ if selected_type=='Top Movies by Genre':
     selected_method = st.sidebar.radio('Rating Method', ('By User Rating', 'By Popularity'))
 
     selected_genre = st.selectbox('Genre',genre_list,index=0)
-    n=10
+    n=5
     
     if selected_method =='By User Rating':
         top_movies=get_top_movies_by_rating(selected_genre, n)
     elif selected_method =='By Popularity':
         top_movies=get_top_movies_by_popularity(selected_genre, n)
 
-    rows = n//5
+    rows = 1
     cols = st.columns(5)
     i=0
     for row in range(rows+1):
