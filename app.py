@@ -123,8 +123,16 @@ elif selected_type=='Collaborative Filtering':
                     all_recs[iid]=est
                     
             top_n = sorted(all_recs.items(), key=lambda x: x[1], reverse=True)[:n]
-            top_n_ids = [x[0] for x in top_n]
-            st.write(top_n_ids)
+            top_movies = [x[0] for x in top_n]
+            st.write(top_movies)
+            
+            cols = st.columns(5)
+            i=0
+            for col in cols:
+                with col:
+                    st.image(img_url+'/'+str(top_movies.iloc[i,0])+'.jpg',width=100)
+                    st.caption(top_movies.iloc[i,1][:-6])
+                    i+=1
 
 
 
