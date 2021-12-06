@@ -114,8 +114,8 @@ elif selected_type=='Collaborative Filtering':
                     st.image(img_url+'/'+str(movies_to_rate.iloc[i,0])+'.jpg',width=100)
                     val = col.selectbox(f'', ['Not Rated','1','2','3','4','5'], key=i)
                     if val!='Not Rated':
-                        st.write('Rated')
-                        #ratings = ratings.append({'UserID':9999,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
+                        #st.write('Rated')
+                        ratings = ratings.append({'UserID':9999,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
                     #user_item.loc[9999,movies_to_rate.iloc[i,0]]=np.nan if val=='Not Rated' else int(val)
                     i+=1
         submitted = st.form_submit_button('Submit')
