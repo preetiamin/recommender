@@ -29,6 +29,7 @@ def load_data():
     myurl = "https://liangfgithub.github.io/MovieData/ratings.dat"
     ratings = pd.read_csv(myurl,encoding='ISO-8859-1',sep='::',header=None,engine='python')
     ratings.columns=['UserID', 'MovieID', 'Rating', 'Timestamp']
+    ratings.drop(columns='Timestamp',inplace=True)
 
     myurl = "https://liangfgithub.github.io/MovieData/movies.dat"
     movies = pd.read_csv(myurl,encoding='latin1',sep='::',header=None,engine='python')
