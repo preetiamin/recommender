@@ -88,7 +88,7 @@ elif selected_type=='Collaborative Filtering':
     selected_method = st.sidebar.radio('Rating Method', ('User Based', 'Item Based', 'SVD'))
     n=10
 
-    user_item = ratings.pivot_table(['Rating'],index='UserID',columns='MovieID')
+    user_item = ratings.pivot_table(values='Rating',index='UserID',columns='MovieID')
     user_item.fillna(0,inplace=True)
     reader = Reader(rating_scale=(1, 5))
 
