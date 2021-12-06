@@ -112,11 +112,12 @@ elif selected_type=='Collaborative Filtering':
                 with col:
                     st.image(img_url+'/'+str(movies_to_rate.iloc[i,0])+'.jpg',width=100)
                     val = col.selectbox(f'', ['Not Rated','1','2','3','4','5'], key=i)
-                    user_item.loc[9999,movies_to_rate.iloc[i,0]]=val
+                    user_item.loc[9999,movies_to_rate.iloc[i,0]]=np.nan if val=='Not Rated' else int(val)
                     i+=1
         submitted = st.form_submit_button('Submit')
         if submitted:
-            st.write(user_item)
+            st.write(user_item.loc[9999,:].sort_values())
+            st.write(movies_to_rate)
             #for i in range(rows*cols+1):
 
     '''
