@@ -75,15 +75,13 @@ if selected_type=='Top Movies by Genre':
     elif selected_method =='By Popularity':
         top_movies=get_top_movies_by_popularity(selected_genre, n)
 
-    rows = 1
     cols = st.columns(5)
     i=0
-    for row in range(rows+1):
-      for col in cols:
-          with col:
-              st.image(img_url+'/'+str(top_movies.iloc[i,0])+'.jpg',width=100)
-              #st.write(top_movies.iloc[i,1][:-6])
-              i+=1
+    for col in cols:
+        with col:
+            st.image(img_url+'/'+str(top_movies.iloc[i,0])+'.jpg',width=100)
+            #st.write(top_movies.iloc[i,1][:-6])
+            i+=1
               
 elif selected_type=='Collaborative Filtering':
                                                 
