@@ -80,7 +80,7 @@ if selected_type=='Top Movies by Genre':
     for col in cols:
         with col:
             st.image(img_url+'/'+str(top_movies.iloc[i,0])+'.jpg',width=100)
-            #st.write(top_movies.iloc[i,1][:-6])
+            st.caption(top_movies.iloc[i,1][:-6])
             i+=1
               
 elif selected_type=='Collaborative Filtering':
