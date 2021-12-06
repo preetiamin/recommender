@@ -87,16 +87,7 @@ if selected_type=='Top Movies by Genre':
 elif selected_type=='Collaborative Filtering':
                                                 
     selected_method = st.sidebar.radio('Rating Method', ('User Based', 'Item Based', 'SVD'))
-    n=10
-
-    user_item = ratings.pivot_table('Rating','UserID','MovieID')
-    user_item.fillna(0,inplace=True)
-    reader = Reader(rating_scale=(1, 5))
-
-    data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
-
-    # Use the famous SVD algorithm.
-    algo = SVD()
+    n=5
 
     st.caption('Rate some movies first, then click Submit to get recommendations')
 
@@ -105,35 +96,23 @@ elif selected_type=='Collaborative Filtering':
 
     with st.form(key='columns_in_form'):
         cols = st.columns(5)
-        #st.write(img_url+'/'+str(top_movies.iloc[1,0])+'.jpg')
         i=0
-        ratings = []
         for row in range(1,rows+1):
             for col in cols:
                 with col:
                     st.image(img_url+'/'+str(movies_to_rate.iloc[i,0])+'.jpg',width=100)
                     val = col.selectbox(f'', ['Not Rated','1','2','3','4','5'], key=i)
                     if val!='Not Rated':
-                        #st.write('Rated')
                         ratings = ratings.append({'UserID':9999,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
-                    #user_item.loc[9999,movies_to_rate.iloc[i,0]]=np.nan if val=='Not Rated' else int(val)
                     i+=1
         submitted = st.form_submit_button('Submit')
         if submitted:
-            '''
-            st.write(user_item.loc[9999,:].sort_values())
             st.write(movies_to_rate)
-            all_recs = {}
-            uid = 9999
-            for iid in user_item.columns:
-                if user_item.loc[uid,iid]==0:
-                    est = algo.predict(uid,iid).est
-                    all_recs[iid]=est
-            #for i in range(rows*cols+1):
-            '''
+           
             reader = Reader(rating_scale=(1, 5))
             data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
             trainset = data.build_full_trainset()
+            algo = SVD()
             algo.fit(trainset)
             
             all_recs = {}
@@ -146,15 +125,6 @@ elif selected_type=='Collaborative Filtering':
             top_n = sorted(all_recs.items(), key=lambda x: x[1], reverse=True)[:n]
             top_n_ids = [x[0] for x in top_n]
             st.write(top_n_ids)
-        
-
-
-    '''
-    if selected_method =='By User Rating':
-        top_movies=get_top_movies_by_rating(selected_genre, n)
-    elif selected_method =='By Popularity':
-        top_movies=get_top_movies_by_popularity(selected_genre, n)
-   '''
 
 
 
