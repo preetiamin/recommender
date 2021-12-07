@@ -123,10 +123,11 @@ elif selected_type=='Collaborative Filtering':
                     all_recs[iid]=est
                     
             top_n = sorted(all_recs.items(), key=lambda x: x[1], reverse=True)[:n]
-            top_movies_ids = [x[0] for x in top_n]
-            top_movies = movies[movies['MovieID'].isin(top_movies_ids)]
+            top_n_ids = [x[0] for x in top_n]
+            top_movies = movies[movies['MovieID'].isin(top_n_ids)]
             st.write(top_movies)
             
+            st.subheader('Your recommendations')
             cols = st.columns(5)
             i=0
             for col in cols:
