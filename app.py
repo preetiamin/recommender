@@ -49,33 +49,31 @@ def load_data():
     return movies, ratings
 
 movies, ratings = load_data()
+n=5
 
 def get_top_movies_by_rating(genre, n):
     return movies[(movies['NumRatings']>100) & (movies[genre]==1)].sort_values('AveRating', \
-    ascending=False)[['MovieID','Title','AveRating']][:n]
+    ascending=False)[['MovieID','Title','AveRating','NumRatings']][:n]
  
 def get_top_movies_by_popularity(genre, n):
     return movies[(movies['AveRating']>2) & (movies[genre]==1)].sort_values('NumRatings', \
-    ascending=False)[['MovieID','Title','NumRatings']][:n]
+    ascending=False)[['MovieID','Title','AveRating','NumRatings']][:n]
   
 def get_popular_movies(n):
-    return movies.sort_values('NumRatings', ascending=False)[['MovieID','Title','AveRating']][:n]
+    return movies.sort_values('NumRatings', ascending=False)[['MovieID','Title','AveRating','NumRatings']][:n]
 
 def get_random_movies(n):
-    return movies.sample(n)
-
+    return movies.sample(n)[['MovieID','Title','AveRating','NumRatings']]
 
 if selected_type=='Top Movies by Genre':
-                                                
+                                            
     selected_method = st.sidebar.radio('Rating Method', ('By User Rating', 'By Popularity'))
-
     selected_genre = st.selectbox('Genre',genre_list,index=0)
-    n=5
-    
+
     if selected_method =='By User Rating':
-        top_movies=get_top_movies_by_rating(selected_genre, n)
+        top_movies = get_top_movies_by_rating(selected_genre, n)
     elif selected_method =='By Popularity':
-        top_movies=get_top_movies_by_popularity(selected_genre, n)
+        top_movies = get_top_movies_by_popularity(selected_genre, n)
 
     cols = st.columns(5)
     i=0
@@ -88,11 +86,10 @@ if selected_type=='Top Movies by Genre':
 elif selected_type=='Collaborative Filtering':
                                                 
     selected_method = st.sidebar.radio('Rating Method', ('User Based', 'Item Based', 'SVD'))
-    n=5
     st.caption('Rate some movies first, then click Submit to get recommendations')
     
     if selected_method=='User Based':
-        # To use item-based cosine similarity
+        # To use user-based cosine similarity
         sim_options = {"name": "cosine", "user_based": True}
         algo = KNNWithMeans(sim_options=sim_options)
     elif selected_method=='Item Based':
@@ -103,8 +100,10 @@ elif selected_type=='Collaborative Filtering':
         algo = SVD()
 
     movies_to_rate = get_popular_movies(50)
+    movies_gt_200_ratings = movies[movies['NumRatings']>200]
+    uid = 9999
+    
     rows = 10
-
     with st.form(key='columns_in_form'):
         cols = st.columns(5)
         i=0
@@ -114,7 +113,7 @@ elif selected_type=='Collaborative Filtering':
                     st.image(img_url+'/'+str(movies_to_rate.iloc[i,0])+'.jpg',width=100)
                     val = col.selectbox(f'', ['Not Rated','1','2','3','4','5'], key=i)
                     if val!='Not Rated':
-                        ratings = ratings.append({'UserID':9999,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
+                        ratings = ratings.append({'UserID':uid,'MovieID':movies_to_rate.iloc[i,0],'Rating':int(val)},ignore_index=True)
                     i+=1
         submitted = st.form_submit_button('Submit')
         if submitted:
@@ -124,18 +123,15 @@ elif selected_type=='Collaborative Filtering':
             trainset = data.build_full_trainset()
             algo.fit(trainset)
             
-            popular_movies = movies[movies['NumRatings']>200]
             all_recs = {}
-            uid = 9999
             for iid in ratings['MovieID'].unique():
-                if iid not in movies_to_rate['MovieID'].values and iid in popular_movies['MovieID'].values:
+                if iid not in movies_to_rate['MovieID'].values and iid in movies_gt_200_ratings['MovieID'].values:
                     est = algo.predict(uid,iid).est
                     all_recs[iid]=est
                     
             top_n = sorted(all_recs.items(), key=lambda x: x[1], reverse=True)[:n]
             top_n_ids = [x[0] for x in top_n]
             top_movies = movies[movies['MovieID'].isin(top_n_ids)]
-            st.write(top_movies)
             
             st.subheader('Your recommendations')
             cols = st.columns(5)
