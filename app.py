@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from surprise import KNNWithMeans
 from surprise import SVD
 from surprise import Dataset
 from surprise import Reader
