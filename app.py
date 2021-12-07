@@ -118,17 +118,17 @@ elif selected_type=='Collaborative Filtering':
                     i+=1
         submitted = st.form_submit_button('Submit')
         if submitted:
-            st.write(movies_to_rate)
            
             reader = Reader(rating_scale=(1, 5))
             data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
             trainset = data.build_full_trainset()
             algo.fit(trainset)
             
+            popular_movies = movies[movies['NumRatings']>200]
             all_recs = {}
             uid = 9999
-            for iid in ratings[ratings['NumRatings']>200]['MovieID'].unique():
-                if iid not in movies_to_rate['MovieID'].values:
+            for iid in ratings['MovieID'].unique():
+                if iid not in movies_to_rate['MovieID'].values and iid in popular_movies['MovieID'].values:
                     est = algo.predict(uid,iid).est
                     all_recs[iid]=est
                     
