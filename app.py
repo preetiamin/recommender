@@ -127,7 +127,7 @@ elif selected_type=='Collaborative Filtering':
             
             all_recs = {}
             uid = 9999
-            for iid in ratings['MovieID'].unique():
+            for iid in ratings[ratings['NumRatings']>200]['MovieID'].unique():
                 if iid not in movies_to_rate['MovieID'].values:
                     est = algo.predict(uid,iid).est
                     all_recs[iid]=est
