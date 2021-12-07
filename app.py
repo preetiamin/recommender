@@ -130,7 +130,7 @@ elif selected_type=='Collaborative Filtering':
             i=0
             for col in cols:
                 with col:
-                    st.image(img_url+'/'+str(top_movies.iloc[i,0])+'.jpg',width=100)
+                    st.image(img_url+'/'+str(top_movies[i])+'.jpg',width=100)
                     st.caption(top_movies.iloc[i,1][:-6])
                     i+=1
 
