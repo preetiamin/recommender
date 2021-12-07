@@ -88,8 +88,18 @@ elif selected_type=='Collaborative Filtering':
                                                 
     selected_method = st.sidebar.radio('Rating Method', ('User Based', 'Item Based', 'SVD'))
     n=5
-
     st.caption('Rate some movies first, then click Submit to get recommendations')
+    
+    if selected_method=='User Based':
+        # To use item-based cosine similarity
+        sim_options = {"name": "cosine", "user_based": True}
+        algo = KNNWithMeans(sim_options=sim_options)
+    elif selected_method=='Item Based':
+        # To use item-based cosine similarity
+        sim_options = {"name": "cosine", "user_based": False}
+        algo = KNNWithMeans(sim_options=sim_options)
+    elif selected_method=='SVD':
+        algo = SVD()
 
     movies_to_rate = get_popular_movies(50)
     rows = 10
@@ -112,7 +122,6 @@ elif selected_type=='Collaborative Filtering':
             reader = Reader(rating_scale=(1, 5))
             data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
             trainset = data.build_full_trainset()
-            algo = SVD()
             algo.fit(trainset)
             
             all_recs = {}
